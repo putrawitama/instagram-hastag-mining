@@ -7,15 +7,13 @@
     <title>Tag Mining</title>
 </head>
 <body>
+  <a href="https://api.instagram.com/oauth/authorize/?client_id=f0a1bf10ef474369bd513e2f888b7377&redirect_uri=http://putrawitama.github.io/tagmining/&scope=public_content&response_type=token">Click Here</a>
     <script>
         if(window.location.hash) {
             var hash = window.location.hash.substring(14); //Puts hash in variable, and removes the # character
             alert (hash);
             // hash found
-        } else {
-            alert('Tidak ada hash');
         }
-
     </script>
 </body>
 </html>
