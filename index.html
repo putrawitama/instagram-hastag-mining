@@ -5,6 +5,8 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <meta http-equiv="X-UA-Compatible" content="ie=edge">
 
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.2.1/jquery.min.js"></script>
+
     <title>Tag Mining</title>
 </head>
 <body>
@@ -18,7 +20,7 @@
               type: "GET",
               dataType: "jsonp",
               cache: false,
-              url: "https://api.instagram.com/v1/tags/belanegara/media/recent?access_token=1501273262.f0a1bf1.0b51c356bb524726a1b90729e2ceb2c3",
+              url: "https://api.instagram.com/v1/tags/belanegara/media/recent?access_token="+hash,
               success: function(data) {
                 // placing the images on the page
                 console.log(data);
