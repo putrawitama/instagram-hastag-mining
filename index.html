@@ -5,28 +5,119 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <meta http-equiv="X-UA-Compatible" content="ie=edge">
 
+    <link rel="stylesheet" href="/css/bootstrap.min.css">
+
     <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.2.1/jquery.min.js"></script>
 
     <title>Tag Mining</title>
 </head>
 <body>
-  <a href="https://api.instagram.com/oauth/authorize/?client_id=f0a1bf10ef474369bd513e2f888b7377&redirect_uri=http://putrawitama.github.io/tagmining/&scope=public_content&response_type=token">Click Here</a>
-    <script>
-        if(window.location.hash) {
-            var hash = window.location.hash.substring(14); //Puts hash in variable, and removes the # character
-            alert (hash);
-            // hash found
-            $.ajax({
-              type: "GET",
-              dataType: "jsonp",
-              cache: false,
-              url: "https://api.instagram.com/v1/tags/belanegara/media/recent?access_token="+hash,
-              success: function(data) {
-                // placing the images on the page
-                console.log(data);
+  <div class="container">
+    <div class="jumbotron" style="background-color: #e3f2fd;">
+      <h1 class="display-3">Tag Mining</h1>
+      <p class="lead">Select the right <strong>#</strong>hashtag and get more likes</p>
+      <!-- <hr class="my-4"> -->
+      <div id="login">
+        <p>This helps you in choosing a hashtag. So please log in with instagram.</p>
+        <p class="lead">
+          <a class="btn btn-outline-primary btn-lg"
+             href="https://api.instagram.com/oauth/authorize/?client_id=f0a1bf10ef474369bd513e2f888b7377&redirect_uri=http://tagminingk07.hol.es/&scope=public_content&response_type=token"
+             role="button">
+             Login
+          </a>
+        </p>
+      </div>
+    </div>
+    <div id="logon" style="display: none;">
+      <div class="row">
+        <div class="col-lg-4 col-md-6 offset-md-6 offset-lg-8 mb-3">
+          <form class="form-inline">
+            <input class="form-control mr-sm-2" type="text" id="search" placeholder="Search Hashtag">
+            <button class="btn btn-outline-primary my-2 my-sm-0" onclick="tagSearch()">Search</button>
+          </form>
+        </div>
+      </div>
+      <h4 class="card-title">Relevant Hashtag</h4>
+      <hr class="my-4">
+      <div id="alertInfo" class="alert alert-info" role="alert">
+        <strong>#Hashtag</strong> is Not Found!
+      </div>
+      <div class="row">
+        <div class="col-4">
+          <ul id="tagList" class="list-group"></ul>
+        </div>
+      </div>
+    </div>
+  </div>
+  <script>
+      if(window.location.hash) {
+          var hash = window.location.hash.substring(14); //Puts hash in variable, and removes the # character
+          // hash found
+        }
+
+        function tagSearch() {
+          var hashTag = [];
+          var tag = document.getElementById("search").value;
+          $.ajax({
+            type: "GET",
+            dataType: "jsonp",
+            cache: true,
+            url: "https://api.instagram.com/v1/tags/"+tag+"/media/recent?access_token="+hash,
+            success: function(data) {
+              // placing the images on the page
+              document.getElementById("alertInfo").style.display = "none";
+              for (var i = 0; i < data.data.length; i++) {
+                for (var j = 0; j < data.data[i].tags.length; j++) {
+                  if (i == 0) {
+                    hashTag.push({
+                      name : data.data[i].tags[j],
+                      total : 1
+                    });
+                  } else {
+                    for (var k = 0; k < hashTag.length; k++) {
+                      if (hashTag[k].name == data.data[i].tags[j]) {
+                        hashTag[k].total = hashTag[k].total + 1;
+                        break;
+                      }
+                      // console.log(k);
+                      if (k == hashTag.length-1) {
+                        hashTag.push({
+                          name : data.data[i].tags[j],
+                          total : 1
+                        });
+                        break;
+                      }
+                    }
+                  }
+                  console.log(data.data[i].tags[j]);
                 }
-            });
+              }
+              console.log(hashTag);
+              tagList(hashTag);
+              }
+          });
+        }
+
+        function tagList(data) {
+          console.log("ini buat list");
+          for (var i = 0; i < data.length; i++) {
+            var li = document.createElement("LI");
+            var sp = document.createElement("span");
+            var ts = document.createTextNode(data[i].total);
+            var tl = document.createTextNode(data[i].name);
+            li.className = "list-group-item justify-content-between";
+            sp.className = "badge badge-pill badge-info";
+            sp.appendChild(ts);
+            li.appendChild(tl);
+            li.appendChild(sp);
+            document.getElementById("tagList").appendChild(li);
           }
-    </script>
+        }
+
+        if (hash != null) {
+          document.getElementById("login").style.display = "none";
+          document.getElementById("logon").style.display = "block";
+        }
+  </script>
 </body>
 </html>
