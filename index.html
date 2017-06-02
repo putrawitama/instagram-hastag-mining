@@ -15,13 +15,13 @@
   <div class="container">
     <div class="jumbotron" style="background-color: #e3f2fd;">
       <h1 class="display-3">Tag Mining</h1>
-      <p class="lead">Select the right <strong>#</strong>hashtag and get more likes</p>
+      <p class="lead">Choose the right #hashtag and get more likes.</p>
       <!-- <hr class="my-4"> -->
       <div id="login">
         <p>This helps you in choosing a hashtag. So please log in with instagram.</p>
         <p class="lead">
           <a class="btn btn-outline-primary btn-lg"
-             href="https://api.instagram.com/oauth/authorize/?client_id=f0a1bf10ef474369bd513e2f888b7377&redirect_uri=http://tagminingk07.hol.es/&scope=public_content&response_type=token"
+             href="https://api.instagram.com/oauth/authorize/?client_id=f0a1bf10ef474369bd513e2f888b7377&redirect_uri=http://localhost:8000/&scope=public_content&response_type=token"
              role="button">
              Login
           </a>
@@ -50,73 +50,97 @@
     </div>
   </div>
   <script>
+      var urlApi;
+      var tag;
+      var hashTag = [];
       if(window.location.hash) {
           var hash = window.location.hash.substring(14); //Puts hash in variable, and removes the # character
           // hash found
         }
 
         function tagSearch() {
-          var hashTag = [];
-          var tag = document.getElementById("search").value;
+          $('#alertInfo').hide();
+          tag = document.getElementById("search").value;
+          urlApi = "https://api.instagram.com/v1/tags/"+tag+"/media/recent?access_token="+hash;
+          instaApi();
+        }
+
+        function instaApi() {
+          // if (urlApi == undefined) {
+          //   console.log(hashTag);
+          //   // tagList(hashTag);
+          // }
           $.ajax({
             type: "GET",
             dataType: "jsonp",
             cache: true,
-            url: "https://api.instagram.com/v1/tags/"+tag+"/media/recent?access_token="+hash,
+            url: urlApi,
             success: function(data) {
-              // placing the images on the page
-              document.getElementById("alertInfo").style.display = "none";
+              // storeData(data);
               for (var i = 0; i < data.data.length; i++) {
-                for (var j = 0; j < data.data[i].tags.length; j++) {
-                  if (i == 0) {
-                    hashTag.push({
-                      name : data.data[i].tags[j],
-                      total : 1
-                    });
-                  } else {
-                    for (var k = 0; k < hashTag.length; k++) {
-                      if (hashTag[k].name == data.data[i].tags[j]) {
-                        hashTag[k].total = hashTag[k].total + 1;
-                        break;
-                      }
-                      // console.log(k);
-                      if (k == hashTag.length-1) {
-                        hashTag.push({
-                          name : data.data[i].tags[j],
-                          total : 1
-                        });
-                        break;
-                      }
-                    }
-                  }
-                  console.log(data.data[i].tags[j]);
-                }
+                hashTag.push({
+                        id : data.data[i].id,
+                        tag : data.data[i].tags
+                      });
               }
-              console.log(hashTag);
-              tagList(hashTag);
+              // console.log(hashTag);
+
+              urlApi = data.pagination.next_url;
+              if (urlApi != undefined) {
+                instaApi();
+              } else {
+                // tagList(hashTag);
+                console.log(hashTag);
               }
+            }
           });
         }
 
-        function tagList(data) {
-          console.log("ini buat list");
-          for (var i = 0; i < data.length; i++) {
-            var li = document.createElement("LI");
-            var sp = document.createElement("span");
-            var ts = document.createTextNode(data[i].total);
-            var tl = document.createTextNode(data[i].name);
-            li.className = "list-group-item justify-content-between";
-            sp.className = "badge badge-pill badge-info";
-            sp.appendChild(ts);
-            li.appendChild(tl);
-            li.appendChild(sp);
-            document.getElementById("tagList").appendChild(li);
-          }
+        function sendData(hashTag) {
+          $.ajax({
+                  type: "POST",
+                  dataType: "json",
+                  url: "api/endpoints/tags.php",
+                  data: {myData: JSON.stringify(hashTag)},
+                  success: function(data){
+                      alert('Items added');
+                  },
+                  error: function(e){
+                      console.log(e.message);
+                  }
+          });
         }
 
+        // function tagList(data) {
+        //   console.log("ini buat list");
+        //   for (var i = 0; i < data.length; i++) {
+        //     var li = document.createElement("LI");
+        //     var sp = document.createElement("span");
+        //     var ts = document.createTextNode(data[i].total);
+        //     var tl = document.createTextNode(data[i].name);
+        //     li.className = "list-group-item justify-content-between";
+        //     sp.className = "badge badge-pill badge-info";
+        //     sp.appendChild(ts);
+        //     li.appendChild(tl);
+        //     li.appendChild(sp);
+        //     document.getElementById("tagList").appendChild(li);
+        //   }
+        //   for (var i = 0; i < data.length; i++) {
+        //     for (var j = 0; j < data[i].tag.length; j++) {
+        //       var li = document.createElement("LI");
+        //       var tl = document.createTextNode(data[i].tag[j]);
+        //       li.className = "list-group-item justify-content-between";
+        //       li.appendChild(tl);
+        //       document.getElementById("tagList").appendChild(li);
+        //     }
+        //   }
+        // }
+
         if (hash != null) {
-          document.getElementById("login").style.display = "none";
-          document.getElementById("logon").style.display = "block";
+          $('#logon').show();
+          $('#login').hide();
+          // document.getElementById("login").style.display = "none";
+          // document.getElementById("logon").style.display = "block";
         }
   </script>
 </body>
