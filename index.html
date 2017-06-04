@@ -15,7 +15,7 @@
   <div class="container">
     <div class="jumbotron" style="background-color: #e3f2fd;">
       <h1 class="display-3">Tag Mining</h1>
-      <p class="lead">Choose the right #hashtag and get more likes.</p>
+      <p class="lead">Choose the right <strong>#hashtag</strong> and get more likes.</p>
       <!-- <hr class="my-4"> -->
       <div id="login">
         <p>This helps you in choosing a hashtag. So please log in with instagram.</p>
@@ -66,10 +66,6 @@
         }
 
         function instaApi() {
-          // if (urlApi == undefined) {
-          //   console.log(hashTag);
-          //   // tagList(hashTag);
-          // }
           $.ajax({
             type: "GET",
             dataType: "jsonp",
@@ -91,6 +87,7 @@
               } else {
                 // tagList(hashTag);
                 console.log(hashTag);
+                // sendData(hashTag); <-- ini fungsi ngirim data ke php ------------------------------------------[]
               }
             }
           });
@@ -111,30 +108,30 @@
           });
         }
 
-        // function tagList(data) {
-        //   console.log("ini buat list");
-        //   for (var i = 0; i < data.length; i++) {
-        //     var li = document.createElement("LI");
-        //     var sp = document.createElement("span");
-        //     var ts = document.createTextNode(data[i].total);
-        //     var tl = document.createTextNode(data[i].name);
-        //     li.className = "list-group-item justify-content-between";
-        //     sp.className = "badge badge-pill badge-info";
-        //     sp.appendChild(ts);
-        //     li.appendChild(tl);
-        //     li.appendChild(sp);
-        //     document.getElementById("tagList").appendChild(li);
-        //   }
-        //   for (var i = 0; i < data.length; i++) {
-        //     for (var j = 0; j < data[i].tag.length; j++) {
-        //       var li = document.createElement("LI");
-        //       var tl = document.createTextNode(data[i].tag[j]);
-        //       li.className = "list-group-item justify-content-between";
-        //       li.appendChild(tl);
-        //       document.getElementById("tagList").appendChild(li);
-        //     }
-        //   }
-        // }
+        function tagList(data) {
+          console.log("ini buat list");
+          for (var i = 0; i < data.length; i++) {
+            var li = document.createElement("LI");
+            var sp = document.createElement("span");
+            var ts = document.createTextNode(data[i].total);
+            var tl = document.createTextNode(data[i].name);
+            li.className = "list-group-item justify-content-between";
+            sp.className = "badge badge-pill badge-info";
+            sp.appendChild(ts);
+            li.appendChild(tl);
+            li.appendChild(sp);
+            document.getElementById("tagList").appendChild(li);
+          }
+          // for (var i = 0; i < data.length; i++) {
+          //   for (var j = 0; j < data[i].tag.length; j++) {
+          //     var li = document.createElement("LI");
+          //     var tl = document.createTextNode(data[i].tag[j]);
+          //     li.className = "list-group-item justify-content-between";
+          //     li.appendChild(tl);
+          //     document.getElementById("tagList").appendChild(li);
+          //   }
+          // }
+        }
 
         if (hash != null) {
           $('#logon').show();
