@@ -6,6 +6,7 @@
     <meta http-equiv="X-UA-Compatible" content="ie=edge">
 
     <link rel="stylesheet" href="/css/bootstrap.min.css">
+    <link rel="stylesheet" href="/css/app.css">
 
     <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.2.1/jquery.min.js"></script>
 
@@ -43,7 +44,12 @@
         <strong>#Hashtag</strong> is Not Found!
       </div>
       <div class="row">
-        <div class="col-4">
+        <div class="col">
+          <ul id="load" class="loading">
+            <li></li>
+            <li></li>
+            <li></li>
+          </ul>
           <ul id="tagList" class="list-group"></ul>
         </div>
       </div>
@@ -60,6 +66,7 @@
 
         function tagSearch() {
           $('#alertInfo').hide();
+          $('#load').show();
           tag = document.getElementById("search").value;
           urlApi = "https://api.instagram.com/v1/tags/"+tag+"/media/recent?access_token="+hash;
           instaApi();
@@ -76,45 +83,62 @@
               for (var i = 0; i < data.data.length; i++) {
                 hashTag.push({
                         id : data.data[i].id,
-                        tag : data.data[i].tags
+                        tags : data.data[i].tags
                       });
               }
               // console.log(hashTag);
-
+              // sendData(hashTag);
               urlApi = data.pagination.next_url;
               if (urlApi != undefined) {
                 instaApi();
               } else {
                 // tagList(hashTag);
-                console.log(hashTag);
-                // sendData(hashTag); <-- ini fungsi ngirim data ke php ------------------------------------------[]
+                // console.log(hashTag);
+                sendData(hashTag);
               }
             }
           });
         }
 
         function sendData(hashTag) {
+          var data = {
+            input : tag,
+            dataset : hashTag
+          };
+
+          console.log(JSON.stringify(data));
           $.ajax({
                   type: "POST",
                   dataType: "json",
-                  url: "api/endpoints/tags.php",
-                  data: {myData: JSON.stringify(hashTag)},
+                  data: {dataset : JSON.stringify(data)},
+                  url: "/endpoint/tags.php",
                   success: function(data){
-                      alert('Items added');
-                  },
-                  error: function(e){
-                      console.log(e.message);
+                      console.log('Items added');
+                      console.log(data);
+                      addHash(data);
                   }
           });
         }
 
+        function addHash(data) {
+          for (var i = 0; i < data.length; i++) {
+            var arr = data[i].assoc_items.split(" ");
+            for (var j = 0; j < arr.length; j++) {
+              arr[j] = '#' + arr[j];
+            }
+            data[i].assoc_items = arr.join(" ");
+          }
+          tagList(data);
+        }
+
         function tagList(data) {
+          $('#load').hide();
           console.log("ini buat list");
           for (var i = 0; i < data.length; i++) {
             var li = document.createElement("LI");
             var sp = document.createElement("span");
-            var ts = document.createTextNode(data[i].total);
-            var tl = document.createTextNode(data[i].name);
+            var ts = document.createTextNode(data[i].confidence+"%");
+            var tl = document.createTextNode(data[i].assoc_items);
             li.className = "list-group-item justify-content-between";
             sp.className = "badge badge-pill badge-info";
             sp.appendChild(ts);

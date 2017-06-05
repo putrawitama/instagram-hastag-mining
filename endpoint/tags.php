@@ -1,6 +1,8 @@
 <?php
 
 ini_set('display_errors', 1);
+ini_set('max_execution_time', 900);
+// error_reporting(E_ALL ^ (E_NOTICE | E_WARNING));
 
 class Apriori{
     /*===================================================================================================
@@ -17,8 +19,8 @@ class Apriori{
     private $itemsets = [];
     private $assoc_rules = [];
     private $thresholds = [
-        'min_sup' => 40,
-        'min_conf' => 75
+        'min_sup' => 5,
+        'min_conf' => 5
     ];
     private $last_iteration = 0;
     private $current_iteration = 0;
@@ -82,7 +84,7 @@ class Apriori{
 
     public function itemset_exists($_itemset){
         $response = false;
-        
+
         if($this->itemsets != []){
             foreach ($this->itemsets as $i => $i_value) {
                 if($this->match($_itemset, $this->itemsets[$i]['itemset'])){
@@ -90,13 +92,13 @@ class Apriori{
                 }
             }
         }
-        
+
         return $response;
     }
 
     public function match($str_a, $str_b){
         $response = false;
-        
+
         $items_a = !is_array($str_a) ? explode(' ', $str_a) : $str_a;
         $items_b = !is_array($str_b) ? explode(' ', $str_b) : $str_b;
 
@@ -107,7 +109,7 @@ class Apriori{
             if(implode(' ', $items_a) == implode(' ', $items_b)){
                 $response = true;
             }
-        }        
+        }
 
         return $response;
     }
@@ -211,7 +213,7 @@ class Apriori{
                                 $sup_count = $this->itemsets[$j]['sup_count'];
                                 $confidence = floor(($dataset_count/$sup_count)*100);
                                 // echo 'Confidence dari item '.$input_item.' pada itemset '.$this->itemsets[$i]['itemset'].' adalah '.$dataset_count.'/'.$sup_count.' = '.$confidence.'%<br>';
-                                
+
                                 if($confidence >= $this->thresholds['min_conf']){
                                     $assoc_items = implode(' ', array_diff($items, explode(' ', $input_item)));
                                     $this->assoc_rules[] = [
@@ -277,8 +279,8 @@ class Apriori{
 /*===================================================================================================*/
 // Comment salah satu method yang tidak dipakai!
 
-// $str_data = $_POST['data'];
-$str_data = $_GET['data'];
+$str_data = $_POST['dataset'];
+// $str_data = $_GET['dataset'];
 
 /*===================================================================================================*/
 
@@ -296,4 +298,5 @@ while ($apr->possible()) {
 // print_r($apr->get_itemsets());
 
 $apr->init_association_rule();
+// print_r($apr->get_assoc_rules());
 echo json_encode($apr->get_assoc_rules());
