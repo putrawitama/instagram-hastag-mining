@@ -18,10 +18,7 @@ class Apriori{
     private $data;
     private $itemsets = [];
     private $assoc_rules = [];
-    private $thresholds = [
-        'min_sup' => 5,
-        'min_conf' => 5
-    ];
+    private $thresholds = [];
     private $last_iteration = 0;
     private $current_iteration = 0;
 
@@ -29,6 +26,11 @@ class Apriori{
     ||  SETTER AND GETTER
     ||===================================================================================================
     */
+    public function set_thresholds($sup, $conf){
+        $this->thresholds['min_sup'] = $sup;
+        $this->thresholds['min_conf'] = $conf;
+    }
+
     public function set_data($_data){
         $this->data = $_data;
     }
@@ -288,6 +290,9 @@ $data = json_decode($str_data, true);
 
 $apr = new Apriori;
 $apr->set_data($data);
+$data['support'] = $data['support'] == null ? 5 : $data['support'];
+$data['confidence'] = $data['confidence'] == null ? 5 : $data['confidence'];
+$apr->set_thresholds($data['support'], $data['confidence']);
 
 while ($apr->possible()) {
     $apr->init_itemset_candidate();

@@ -30,21 +30,13 @@
       </div>
     </div>
     <div id="logon" style="display: none;">
-      <div class="row">
-        <div class="col-lg-4 col-md-6 offset-md-6 offset-lg-8 mb-3">
-          <form class="form-inline">
-            <input class="form-control mr-sm-2" type="text" id="search" placeholder="Search Hashtag">
-            <button class="btn btn-outline-primary my-2 my-sm-0" onclick="tagSearch()">Search</button>
-          </form>
-        </div>
-      </div>
       <h4 class="card-title">Relevant Hashtag</h4>
       <hr class="my-4">
-      <div id="alertInfo" class="alert alert-info" role="alert">
-        <strong>#Hashtag</strong> is Not Found!
-      </div>
       <div class="row">
         <div class="col">
+          <div id="alertInfo" class="alert alert-info" role="alert">
+            <strong>#Hashtag</strong> is Not Found!
+          </div>
           <ul id="load" class="loading">
             <li></li>
             <li></li>
@@ -52,12 +44,36 @@
           </ul>
           <ul id="tagList" class="list-group"></ul>
         </div>
+        <div class="col">
+          <label for="search">Hashtag</label>
+          <div class="form-group my-2">
+
+            <input type="text" id="search" class="form-control" placeholder="Search Hashtag" aria-describedby="basic-addon2">
+          </div>
+          <label for="supportCount">Support Count</label>
+          <div class="input-group my-2">
+
+            <input type="text" id="spCount" class="form-control" placeholder="Default 5" aria-describedby="basic-addon2">
+            <span class="input-group-addon" id="basic-addon2">%</span>
+          </div>
+          <label for="confidence">Confidence</label>
+          <div class="input-group my-2">
+
+            <input type="text" id="conf" class="form-control" placeholder="Default 5" aria-describedby="basic-addon2">
+            <span class="input-group-addon" id="basic-addon2">%</span>
+          </div>
+          <div class="form-group my-2">
+            <button class="btn btn-outline-primary my-2 my-sm-0" onclick="tagSearch()">Search</button>
+          </div>
+        </div>
       </div>
     </div>
   </div>
   <script>
       var urlApi;
       var tag;
+      var conf;
+      var sup;
       var hashTag = [];
       if(window.location.hash) {
           var hash = window.location.hash.substring(14); //Puts hash in variable, and removes the # character
@@ -68,6 +84,8 @@
           $('#alertInfo').hide();
           $('#load').show();
           tag = document.getElementById("search").value;
+          sup = document.getElementById("spCount").value;
+          conf = document.getElementById("conf").value;
           urlApi = "https://api.instagram.com/v1/tags/"+tag+"/media/recent?access_token="+hash;
           instaApi();
         }
@@ -102,6 +120,8 @@
 
         function sendData(hashTag) {
           var data = {
+            support : sup,
+            confidence : conf,
             input : tag,
             dataset : hashTag
           };
